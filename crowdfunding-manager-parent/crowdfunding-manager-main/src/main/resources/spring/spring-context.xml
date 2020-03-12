@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<context:component-scan base-package="com.crowdfunding.*">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
+	<!-- 加载外部属性配置文件 -->
+	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:config/jdbc.properties" />
+	</bean>
+	
+	<!-- 配置C3P0数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	    <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+	    <property name="dataSource" ref="dataSource"/>
+	    <property name="mapperLocations">
+	        <list>
+	            <value>classpath*:mybatis/*Mapper.xml</value>
+	        </list>
+	    </property>
+
+		<!-- 传入PageHelper的插件 -->
+		<property name="plugins">
+			<array>
+				<!-- 传入插件的对象 -->
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<props>
+							<prop key="helperDialect">mysql</prop>
+							<prop key="reasonable">true</prop>
+						</props>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+	
+	<!-- 扫描Mapper映射配置 -->
+	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.crowdfunding.mapper"/>
+	</bean>
+
+	<!-- 事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="java.lang.Exception"/>
+			<tx:method name="query*" read-only="true"/>
+			<tx:method name="get*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<aop:pointcut id="txPoint" expression="execution(* com.crowdfunding..*Service.*(..))"/>
+		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="txPoint"/>
+	</aop:config>
+
+	<!--<aop:config>-->
+		<!--<aop:advisor advice-ref="transactionAdvice" pointcut="execution(* com.crowdfunding..*Service.*(..))"/>-->
+	<!--</aop:config>-->
+
+
+
+
+
+	<!--&lt;!&ndash;1. 指定目标对象类&ndash;&gt;-->
+	<!--<bean id="userDao" class="com.crowdfunding.jdkproxytest.dao.impl.UserDaoImpl"/>-->
+
+	<!--&lt;!&ndash;2. 指定切面类&ndash;&gt;-->
+	<!--<bean id="myAspect" class="com.crowdfunding.aoptest.MyAspect"/>-->
+
+	<!--&lt;!&ndash;3. 使用代理工厂ProxyFactoryBean定义一个名为userDaoProxy的代理对象&ndash;&gt;-->
+	<!--<bean id="userDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">-->
+		<!--&lt;!&ndash;指定代理实现的接口&ndash;&gt;-->
+		<!--<property name="proxyInterfaces" value="com.crowdfunding.jdkproxytest.dao.UserDao"/>-->
+		<!--&lt;!&ndash;指定目标对象&ndash;&gt;-->
+		<!--<property name="target" value="userDao"/>-->
+		<!--&lt;!&ndash;指定切面，植入环绕通知&ndash;&gt;-->
+		<!--<property name="interceptorNames" value="myAspect"/>-->
+		<!--&lt;!&ndash;指定代理方式&ndash;&gt;-->
+		<!--<property name="proxyTargetClass" value="true"/>-->
+	<!--</bean>-->
+
+</beans>
