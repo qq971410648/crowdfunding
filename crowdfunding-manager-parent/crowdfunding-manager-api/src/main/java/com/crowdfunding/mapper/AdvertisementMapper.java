@@ -12,6 +12,8 @@ import java.util.List;
  */
 @Repository
 public interface AdvertisementMapper {
+
+
     int deleteByPrimaryKey(Integer id);
 
     int insert(Advertisement record);
