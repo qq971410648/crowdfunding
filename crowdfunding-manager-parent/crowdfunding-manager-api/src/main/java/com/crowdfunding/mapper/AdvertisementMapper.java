@@ -14,6 +14,9 @@ import java.util.List;
 public interface AdvertisementMapper {
 
 
+
+
+
     int deleteByPrimaryKey(Integer id);
 
     int insert(Advertisement record);

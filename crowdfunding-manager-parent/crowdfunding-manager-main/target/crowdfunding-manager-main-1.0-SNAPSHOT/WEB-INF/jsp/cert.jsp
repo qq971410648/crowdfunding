@@ -1,0 +1,205 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="zh-CN">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/font-awesome.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css">
+    <style>
+        .tree li {
+            list-style-type: none;
+            cursor: pointer;
+        }
+
+        table tbody tr:nth-child(odd) {
+            background: #F4F4F4;
+        }
+
+        table tbody td:nth-child(even) {
+            color: #C00;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <div><a class="navbar-brand" style="font-size:32px;" href="#">众筹平台 - 资质管理</a></div>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <jsp:include page="/WEB-INF/jsp/common/top.jsp"/>
+                <li style="margin-left:10px;padding-top:8px;">
+                </li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" placeholder="Search...">
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <div class="tree">
+                <jsp:include page="/WEB-INF/jsp/common/aside.jsp"/>
+            </div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="glyphicon glyphicon-th"></i> 数据列表</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-inline" role="form" style="float:left;">
+                        <div class="form-group has-feedback">
+                            <div class="input-group">
+                                <div class="input-group-addon">查询条件</div>
+                                <input class="form-control has-success" id="condition"  type="text" placeholder="请输入查询条件">
+                            </div>
+                        </div>
+                        <button type="button" onclick="getAllCert()" class="btn btn-warning"><i class="glyphicon glyphicon-search"></i> 查询
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-danger" style="float:right;margin-left:10px;"><i
+                            class=" glyphicon glyphicon-remove" onclick="doDelForIds()"></i> 删除
+                    </button>
+                    <button type="button" class="btn btn-primary" style="float:right;"
+                            onclick="window.location.href='form.html'"><i class="glyphicon glyphicon-plus"></i> 新增
+                    </button>
+                    <br>
+                    <hr style="clear:both;">
+                    <div class="table-responsive">
+                        <table class="table  table-bordered">
+                            <thead>
+                            <tr>
+                                <th width="30">#</th>
+                                <th width="30"><input type="checkbox"></th>
+                                <th>名称</th>
+                                <th width="100">操作</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="tbody">
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="${pageContext.request.contextPath}/jquery/jquery-2.1.1.min.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath}/script/docs.min.js"></script>
+<script src="${pageContext.request.contextPath}/jquery/layer/layer.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $(".list-group-item").click(function () {
+            if ($(this).find("ul")) {
+                $(this).toggleClass("tree-closed");
+                if ($(this).hasClass("tree-closed")) {
+                    $("ul", this).hide("fast");
+                } else {
+                    $("ul", this).show("fast");
+                }
+            }
+        });
+        getAllCert();
+    });
+
+    function getAllCert() {
+        $.ajax({
+            type: "post",
+            url: "${pageContext.request.contextPath}/cert/getAllCert.do",
+            data: {
+                page: 1,
+                size: 10,
+                condition: $("#condition").val()
+            },
+            success: function (res) {
+                if (res.success) {
+                    var content = "";
+                    var pageData = res.pageInfo;
+                    var pageDataList = pageData.list;
+                    $.each(pageDataList, function (i, n) {
+                        content += '<tr>';
+                        content += '<td>'+(i+1)+'</td>';
+                        content += '<td><input id="checkbox" type="checkbox" name="ids" value=' + (n.id) + '></td>';
+                        content += '<td>'+(n.name)+'</td>';
+                        content += '<td>';
+                        content += '<button type="button" onclick="doEdit('+n.id+')" class="btn btn-primary btn-xs"><i class=" glyphicon glyphicon-pencil"></i></button>';
+                        content += '<button type="button" onclick="doDel('+n.id+')" class="btn btn-danger btn-xs"><i class=" glyphicon glyphicon-remove"></i></button>';
+                        content += '</td>';
+                        content += '</tr>'
+                    });
+                    $("#tbody").html(content)
+                } else {
+                    layer.alert(data.message);
+                }
+            }
+        })
+    }
+    function doEdit(id) {
+        alert(id);
+    }
+    function doDel(id) {
+        layer.confirm("您确认要删除吗", {icon: 2, title: '提示'}, function () {
+            $.ajax({
+                type: "POST",
+                data: {
+                    id: id //data里面""可加可不加
+                },
+                url: "${pageContext.request.contextPath}/cert/doDel.do",
+                success: function (data) {
+                    if (data.success) {
+                        layer.alert(data.message, function () {
+                            location.href = "${pageContext.request.contextPath}/crowdfunding/to_cert.htm";
+                        });
+                    } else {
+                        layer.alert(data.message);
+                    }
+                }
+            })
+        })
+    }
+
+    function doDelForIds() {
+        var checkboxChecked = $("#checkbox:checked");
+        var param = "";
+        $.each(checkboxChecked, function (i, n) {
+            if (i!=0) {
+                param += "&";
+            }
+            param += "ids=" + n.value;
+        });
+        $.ajax({
+            type: "post",
+            url: "${pageContext.request.contextPath}/cert/doDelForIds.do",
+            data: param,
+            success: function (data) {
+                if (data.success) {
+                    layer.alert(data.message, function () {
+                        location.href = "${pageContext.request.contextPath}/crowdfunding/to_cert.htm";
+                    });
+                } else {
+                    layer.alert(data.message);
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>
