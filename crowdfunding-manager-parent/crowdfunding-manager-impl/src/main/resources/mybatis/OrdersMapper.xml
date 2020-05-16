@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crowdfunding.mapper.OrdersMapper">
+
+    <resultMap id="resMap" type="Orders">
+        <id property="id" column="oid"/>
+        <result property="name" column="number"/>
+        <collection property="productList" ofType="Product">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="price" column="price"/>
+        </collection>
+    </resultMap>
+
+    <select id="getOrdersAndProduct" resultMap="resMap">
+        SELECT o.id oid,number,p.name,p.price,p.id
+        FROM tb_orders o INNER JOIN tb_ordersitem os
+        ON o.id = os.orders_id
+        INNER JOIN tb_product p
+        ON os.product_id = p.id
+        where o.id = #{id}
+    </select>
+</mapper>

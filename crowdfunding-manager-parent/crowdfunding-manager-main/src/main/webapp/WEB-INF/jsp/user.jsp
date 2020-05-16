@@ -105,7 +105,7 @@
                                 </thead>
 
                                 <tbody id="tbody">
-                                <%--异步加载数据--%>
+                                    <%--异步加载数据--%>
                                 </tbody>
 
                                 <tfoot>
@@ -155,8 +155,8 @@
                 }
             }
         });
-        page = 1;
-        doGet(page);
+
+        doGet(1);
     });
     $("tbody .btn-success").click(function () {
         window.location.href = "assignRole.html";
@@ -224,7 +224,8 @@
                         // doGet(page);
                         return false;
                     }
-                } else {
+                }
+                else {
                     layer.alert(data.message)
                 }
             }

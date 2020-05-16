@@ -53,6 +53,7 @@
 	
 	<!-- 扫描Mapper映射配置 -->
 	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!--用于指定mapper映射文件xml的位置，一般跟接口所在位置写成一样，便于对应，方便查看-->
 		<property name="basePackage" value="com.crowdfunding.mapper"/>
 	</bean>
 
@@ -60,7 +61,12 @@
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
-	
+
+	<!--开启注解事务的支持-->
+	<!--<tx:annotation-driven transaction-manager="transactionManager"/>-->
+
+
+	<!--通知-->
 	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
 			<tx:method name="*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="java.lang.Exception"/>
@@ -69,11 +75,13 @@
 		</tx:attributes>
 	</tx:advice>
 
+
+	<!--aop管理事务-->
 	<aop:config>
-		<aop:pointcut id="txPoint" expression="execution(* com.crowdfunding..*Service.*(..))"/>
+		<aop:pointcut id="txPoint" expression="execution(* com.crowdfunding.service.*..*(..))"/>
 		<aop:advisor advice-ref="transactionAdvice" pointcut-ref="txPoint"/>
 	</aop:config>
-
+	<!--上面的简写方式-->
 	<!--<aop:config>-->
 		<!--<aop:advisor advice-ref="transactionAdvice" pointcut="execution(* com.crowdfunding..*Service.*(..))"/>-->
 	<!--</aop:config>-->
@@ -82,22 +90,29 @@
 
 
 
+
+
 	<!--&lt;!&ndash;1. 指定目标对象类&ndash;&gt;-->
-	<!--<bean id="userDao" class="com.crowdfunding.jdkproxytest.dao.impl.UserDaoImpl"/>-->
+	<!--<bean id="userService" class="com.crowdfunding.jdkproxytest.service.impl.UserServiceImpl"/>-->
 
 	<!--&lt;!&ndash;2. 指定切面类&ndash;&gt;-->
-	<!--<bean id="myAspect" class="com.crowdfunding.aoptest.MyAspect"/>-->
+	<!--<bean id="myAspect" class="com.crowdfunding.jdkproxytest.aspect.MyAspect"/>-->
 
-	<!--&lt;!&ndash;3. 使用代理工厂ProxyFactoryBean定义一个名为userDaoProxy的代理对象&ndash;&gt;-->
-	<!--<bean id="userDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">-->
-		<!--&lt;!&ndash;指定代理实现的接口&ndash;&gt;-->
-		<!--<property name="proxyInterfaces" value="com.crowdfunding.jdkproxytest.dao.UserDao"/>-->
-		<!--&lt;!&ndash;指定目标对象&ndash;&gt;-->
-		<!--<property name="target" value="userDao"/>-->
-		<!--&lt;!&ndash;指定切面，植入环绕通知&ndash;&gt;-->
-		<!--<property name="interceptorNames" value="myAspect"/>-->
-		<!--&lt;!&ndash;指定代理方式&ndash;&gt;-->
-		<!--<property name="proxyTargetClass" value="true"/>-->
-	<!--</bean>-->
+	<!--&lt;!&ndash;3. AOP编程实现&ndash;&gt;-->
+	<!--<aop:config>-->
+		<!--&lt;!&ndash;配置切面&ndash;&gt;-->
+		<!--<aop:aspect ref="myAspect">-->
+
+			<!--&lt;!&ndash;配置切入点&ndash;&gt;-->
+			<!--<aop:pointcut id="myPointCut" expression="execution(* com.lihao.security.*.*(..))"/>-->
+
+			<!--&lt;!&ndash;配置前置通知&ndash;&gt;-->
+			<!--<aop:before method="Before" pointcut-ref="myPointCut"/>-->
+
+			<!--&lt;!&ndash;配置环绕通知&ndash;&gt;-->
+			<!--<aop:around method="myArround" pointcut-ref="myPointCut"/>-->
+
+		<!--</aop:aspect>-->
+	<!--</aop:config>-->
 
 </beans>

@@ -11,6 +11,7 @@
         <module name="crowdfunding-manager-common" />
         <module name="crowdfunding-manager-impl" />
         <module name="crowdfunding-manager-main" />
+        <module name="spring-security" />
       </profile>
     </annotationProcessing>
   </component>

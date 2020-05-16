@@ -1,4 +1,4 @@
-package com.crowdfunding.jdkproxytest.dao;
+package com.crowdfunding.jdkproxytest.service;
 
 /**
  * 接口
@@ -10,5 +10,8 @@ public interface UserDao {
     void delUser();
 
 }
+
+
+
 
 

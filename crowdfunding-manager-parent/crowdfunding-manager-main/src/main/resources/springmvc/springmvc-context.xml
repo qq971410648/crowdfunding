@@ -33,18 +33,6 @@
 	    </property>
     </bean>
 
-    <!--2019/12/24/12点21分-->
-    <!--本想试着配置这个来代替   mvc:annotation-driven  没有成功-->
-    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>-->
-    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">-->
-        <!--<property name="messageConverters">-->
-            <!--<list>-->
-                <!--<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>-->
-            <!--</list>-->
-        <!--</property>-->
-    <!--</bean>-->
-    
-
 	
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
@@ -53,7 +41,7 @@
     </bean>
 
     <!--SpringMVC提供的异常解析器   只能获取异常  不能处理-->
-    <bean id="exceptionResolver"   class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">  
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
         <property name="exceptionMappings">  
             <props>
                 <prop key="java.lang.Exception">error/error</prop>

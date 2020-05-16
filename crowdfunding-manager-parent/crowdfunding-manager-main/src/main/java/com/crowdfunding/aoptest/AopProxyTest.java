@@ -1,6 +1,6 @@
 package com.crowdfunding.aoptest;
 
-import com.crowdfunding.jdkproxytest.dao.UserDao;
+import com.crowdfunding.jdkproxytest.service.UserDao;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

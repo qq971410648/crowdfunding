@@ -1,7 +1,7 @@
 package com.crowdfunding.jdkproxytest.jdk;
 
 import com.crowdfunding.jdkproxytest.aspect.MyAspect;
-import com.crowdfunding.jdkproxytest.dao.UserDao;
+import com.crowdfunding.jdkproxytest.service.UserDao;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -10,12 +10,12 @@ import java.lang.reflect.Proxy;
 /**
  * 代理类
  */
-public class JdkProxy implements InvocationHandler {
+public class JdkProxy implements InvocationHandler {  // InvocationHandler是一个接口，只有一个方法invoke()
 
     //1. 声明目标类接口
     private UserDao userDao;
 
-    //2. 创建代理方法
+    //2. 获取被代理后的对象
     public Object createProxy(UserDao userDao){
         this.userDao = userDao;
 
@@ -33,9 +33,10 @@ public class JdkProxy implements InvocationHandler {
      * 实现InvocationHandler  必须实现的方法
      *
      * 所有动态代理类的方法的调用，都交给invoke()方法处理
-     * @param proxy     被代理后的对象
-     * @param method    将要被执行的方法
-     * @param args      执行方法时需要的参数
+     *
+     * @param proxy————————————————————————————被代理后的对象
+     * @param method——————————————————————————— 将要被执行的方法
+     * @param args—————————————————————————————执行方法时需要的参数
      * @return
      * @throws Throwable
      */
@@ -43,12 +44,14 @@ public class JdkProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         //1. 声明切面类
         MyAspect myAspect = new MyAspect();
+
         //2. 前增强
-        myAspect.check_Login();//检查是否登录
-        //3. 在目标类上调用方法，并传入参数
+        myAspect.Before();
+
+        //3. 在目标类上调用方法,并传入参数
         Object obj = method.invoke(userDao, args);
-        //4. 后增强
-        myAspect.do_Log();//日志处理
         return obj;
     }
 }
+
+

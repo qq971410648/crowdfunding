@@ -92,8 +92,27 @@
                 }
             }
         });
+
+        getAllMenu();
     });
 
+    function getAllMenu() {
+        $.ajax({
+            type:"get",
+            url:"${pageContext.request.contextPath}/menu/getAllMenu.do",
+            success:function (data) {
+                if (data.success) {
+                    var content = "";
+                    var menuList = data.data;
+                    $.each(menuList,function (i, n) {
+                        alert(n.name);
+                    })
+                } else {
+                    alert(data.message)
+                }
+            }
+        })
+    }
 
 </script>
 </body>

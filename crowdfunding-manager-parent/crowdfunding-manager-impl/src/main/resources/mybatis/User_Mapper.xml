@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crowdfunding.mapper.User_Mapper">
+
+    <resultMap id="resMap" type="User_">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="address" column="address"/>
+        <collection property="ordersList" ofType="Orders">
+            <id property="id" column="oid"/>
+            <result property="name" column="number"/>
+        </collection>
+    </resultMap>
+
+    <select id="getUserAndOrder" resultMap="resMap">
+        SELECT tb_user.id,username,address,number,tb_orders.id oid
+        FROM tb_user INNER JOIN tb_orders
+        ON tb_user.`id` = tb_orders.`user_id`
+        WHERE tb_user.id = #{id}
+    </select>
+</mapper>
+
+

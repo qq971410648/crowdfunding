@@ -1,9 +1,9 @@
-package com.crowdfunding.jdkproxytest.dao.impl;
+package com.crowdfunding.jdkproxytest.service.impl;
 
-import com.crowdfunding.jdkproxytest.dao.UserDao;
+import com.crowdfunding.jdkproxytest.service.UserDao;
 
 /**
- * 目标对象
+ * 被代理对象——目标类
  */
 public class UserDaoImpl implements UserDao {
     @Override
@@ -16,3 +16,7 @@ public class UserDaoImpl implements UserDao {
         System.out.println("删除用户");
     }
 }
+
+
+
+

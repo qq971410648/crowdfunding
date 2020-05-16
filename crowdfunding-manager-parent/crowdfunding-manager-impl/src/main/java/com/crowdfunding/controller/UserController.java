@@ -8,7 +8,9 @@ import com.crowdfunding.service.UserService;
 import com.crowdfunding.util.MD5Util;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +25,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    static Logger logger = Logger.getLogger(UserController.class);
+
     /**
      * 用户登录
      *
@@ -35,6 +39,7 @@ public class UserController {
         try {
             //根据用户输入的用户名判断是否存在该用户
             User userByLogincct = userService.getUserByLogincct(user);
+            logger.info(userByLogincct);
             if (userByLogincct == null) {
                 return new AjaxResult(false, "用户名或密码错误");
             }
@@ -102,13 +107,6 @@ public class UserController {
             //使用了pageHelper
             PageHelper.startPage(page, size);
             List<User> users = userService.getAllUserByCondition();    //加条件
-            for (User user : users) {
-                System.out.println("每个用户信息");
-                System.out.println(user);
-                List<Role> roles = user.getRoles();
-                System.out.println(roles);
-                System.out.println();
-            }
             //List<User> users = userService.getAllUser();                      //不加条件
 
             //PageInfo对象由PageHelper提供，PageHelper的list属性：该页数据结果集
@@ -130,7 +128,7 @@ public class UserController {
      * @return
      */
     @RequestMapping("/doAdd")
-    public AjaxResult doAdd(User user) {
+    public AjaxResult doAdd(@RequestBody User user) {
         try {
             //后台做一个判断，判断用户是否把所有信息都填写完毕。这个功能没有做后台是否已注册的校验
             if (user.getLoginacct().equals("") || user.getUserpswd().equals("") || user.getUsername().equals("") || user.getEmail().equals("")) {
